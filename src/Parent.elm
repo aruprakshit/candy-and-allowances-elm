@@ -34,7 +34,7 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         PayCheck amount ->
-            { model | money = amount }
+            { model | money = model.money + amount }
 
         ChildMsg name msg_ ->
             case Dict.get name model.children of
@@ -113,10 +113,17 @@ view model =
         ([ h1 [] [ text "Parent" ]
          , p [] [ "Money: $" ++ String.fromFloat model.money |> text ]
          , button [ onClick (PayCheck 100) ] [ text "$100 paycheck!" ]
-         , button [ onClick Allowance ] [ text "Hand out allowance" ]
+         , if model.money > 0 then
+            button [ onClick Allowance ] [ text "Hand out allowance" ]
+
+           else
+            text ""
          , h2 [] [ text "Children" ]
          ]
-            ++ (model.children |> Dict.toList |> List.map wrappedChild)
+            ++ (model.children
+                    |> Dict.toList
+                    |> List.map wrappedChild
+               )
         )
 
 
